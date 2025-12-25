@@ -1,0 +1,8 @@
+name = "tech-trend-archiver"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[[d1_databases]]
+binding = "D1_DB"
+database_name = "tech-trend-archiver"
+database_id = "YOUR_D1_DATABASE_ID"
