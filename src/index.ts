@@ -40,10 +40,6 @@ async function fetchTrendFromXai(apiKey: string): Promise<string> {
       model: "grok-4-1-fast",
       messages: [
         {
-          role: "system",
-          content: "You are a helpful assistant.",
-        },
-        {
           role: "user",
           content: PROMPT,
         },
