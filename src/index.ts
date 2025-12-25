@@ -87,6 +87,9 @@ async function upsertTrendEntry(
 }
 
 export default {
+  async fetch() {
+    return new Response("Not Found", { status: 404 });
+  },
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
     ctx.waitUntil(
       (async () => {
