@@ -1,0 +1,15 @@
+# Environment files
+.env
+
+# Cloudflare Wrangler
+.wrangler/
+
+# Node dependencies
+node_modules/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
