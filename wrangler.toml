@@ -8,3 +8,8 @@ enabled = true
 head_sampling_rate = 1
 invocation_logs = true
 persist = true
+
+[[d1_databases]]
+binding = "D1_DB"
+database_name = "tech-trend-archiver"
+database_id = "37894c30-f160-47dc-bd83-7b5d24bda13c"
