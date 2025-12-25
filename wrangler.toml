@@ -13,3 +13,6 @@ persist = true
 binding = "D1_DB"
 database_name = "tech-trend-archiver"
 database_id = "37894c30-f160-47dc-bd83-7b5d24bda13c"
+
+[triggers]
+crons = ["0 3 * * *", "0 15 * * *"]
