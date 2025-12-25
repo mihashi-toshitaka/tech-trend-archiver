@@ -38,7 +38,14 @@ npm install -g wrangler
 wrangler d1 create tech-trend-archiver
 ```
 
-作成後に表示される `database_id` を `wrangler.toml` に設定してください。
+作成後に表示される `database_id` は控えておきます。
+
+#### Workers の Bindings で D1 を連携
+
+Cloudflare ダッシュボードで対象 Worker を開き、**Settings → Variables** の **D1 database bindings** に以下を追加します。
+
+- **Variable name**: `D1_DB`
+- **D1 database**: 作成した `tech-trend-archiver`
 
 ### 3. D1 スキーマ適用
 
@@ -72,17 +79,14 @@ Cloudflare ダッシュボードまたは Wrangler で以下を設定します�
 wrangler dev
 ```
 
-## GitHub Actions デプロイ
+## Cloudflare Git 連携デプロイ
 
-タグ作成時にデプロイされます。
+Cloudflare の Git 連携（Workers & Pages の **Git integration**）でデプロイします。
 
-- タグ例: `v1.0.0`
-- GitHub Secrets に `CLOUDFLARE_API_TOKEN` を登録
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
+1. Cloudflare ダッシュボードで **Workers & Pages → Create** を選択
+2. リポジトリを接続して **Workers** を選択
+3. ビルド設定はデフォルトのまま保存（Wrangler が実行されます）
+4. 以降は `main` への push で自動デプロイされます
 
 ## ブログ側での利用
 
