@@ -44,6 +44,12 @@ async function fetchTrendFromXai(apiKey: string): Promise<string> {
           content: PROMPT,
         },
       ],
+      tools: [
+        {
+          type: "x_search",
+        },
+      ],
+      tool_choice: "auto",
       temperature: 0.2,
     }),
   });
