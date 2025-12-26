@@ -118,3 +118,51 @@ ORDER BY slot ASC;
 ■最新のIT脆弱性情報
 [[ここに収集した情報を入れる]]
 ```
+
+## xAI API 利用方法（Responses API + Search Tools）
+
+本プロジェクトは **Responses API** を利用します。旧 `/v1/chat/completions` + `tools` の利用は想定していないため、混在させないでください。
+
+### エンドポイント
+
+- `POST https://api.x.ai/v1/responses`
+
+### `x_search` 利用時のリクエスト形式・必須パラメータ
+
+`x_search` を使う場合は、`tools` に `type: "x_search"` を指定し、`options.sources` に検索対象を指定します。
+
+**必須パラメータ（本プロジェクト想定）**
+
+- `model`: 例 `grok-4-1`
+- `input`: メッセージ配列（`role`, `content` を含む）
+- `tools`: `[{ "type": "x_search", "options": { "sources": ["x"] } }]`
+- `tool_choice`: `auto`（Search Tools を自動使用）
+
+### サンプルリクエスト（Responses API）
+
+```bash
+curl -X POST https://api.x.ai/v1/responses \
+  -H "Authorization: Bearer $XAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-4-1",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          { "type": "text", "text": "ここ12時間のIT技術トレンドをまとめてください。" }
+        ]
+      }
+    ],
+    "tools": [
+      {
+        "type": "x_search",
+        "options": {
+          "sources": ["x"]
+        }
+      }
+    ],
+    "tool_choice": "auto",
+    "temperature": 0.2
+  }'
+```
