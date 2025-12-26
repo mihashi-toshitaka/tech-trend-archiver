@@ -68,6 +68,11 @@ async function fetchTrendFromXai(apiKey: string): Promise<string> {
   }
 
   const payload = (await response.json()) as {
+    error?: {
+      message?: string;
+      type?: string;
+      code?: string;
+    };
     output_text?: string;
     output?: Array<{
       content?: Array<{
@@ -77,14 +82,31 @@ async function fetchTrendFromXai(apiKey: string): Promise<string> {
     }>;
   };
 
-  const content =
-    payload.output_text ??
-    payload.output
-      ?.flatMap((item) => item.content ?? [])
-      .find((item) => item.type === "output_text" || item.type === "text")
-      ?.text;
+  if (payload.error) {
+    const details = [payload.error.type, payload.error.code, payload.error.message]
+      .filter(Boolean)
+      .join(" ");
+    throw new Error(`xAI API error response: ${details || "unknown error"}`);
+  }
+
+  if (payload.output_text && payload.output_text.trim().length > 0) {
+    return payload.output_text;
+  }
+
+  const outputParts = payload.output ?? [];
+  if (outputParts.length === 0) {
+    throw new Error("xAI API response missing output content");
+  }
+
+  const content = outputParts
+    .flatMap((item) => item.content ?? [])
+    .filter((item) => item.type === "output_text" || item.type === "text")
+    .map((item) => item.text?.trim())
+    .filter((text): text is string => Boolean(text))
+    .join("\n");
+
   if (!content) {
-    throw new Error("xAI API response missing content");
+    throw new Error("xAI API response missing output text content");
   }
 
   return content;
