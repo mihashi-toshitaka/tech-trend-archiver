@@ -123,6 +123,14 @@ async function upsertTrendEntry(
     .run();
 }
 
+async function hasTrendEntry(db: D1Database, date: string, slot: 0 | 1): Promise<boolean> {
+  const result = await db
+    .prepare("SELECT 1 as exists_flag FROM trend_entries WHERE date = ? AND slot = ? LIMIT 1")
+    .bind(date, slot)
+    .first<{ exists_flag: number }>();
+  return Boolean(result?.exists_flag);
+}
+
 export default {
   async fetch() {
     return new Response("Not Found", { status: 404 });
@@ -133,6 +141,12 @@ export default {
         const now = new Date(event.scheduledTime);
         const date = getJstDateString(now);
         const slot = getSlotFromJstHour(now);
+        const alreadyExists = await hasTrendEntry(env.D1_DB, date, slot);
+        if (alreadyExists) {
+          console.log(`Skipping xAI fetch: entry already exists for date=${date} slot=${slot}.`);
+          return;
+        }
+        console.log(`Fetching xAI trends for date=${date} slot=${slot}.`);
         const rawResponse = await fetchTrendFromXai(env.XAI_API_KEY, date, date);
         await upsertTrendEntry(env.D1_DB, date, slot, rawResponse);
       })(),
