@@ -29,7 +29,7 @@ function getSlotFromJstHour(date: Date): 0 | 1 {
   return jstDate.getUTCHours() < 12 ? 0 : 1;
 }
 
-async function fetchTrendFromXai(apiKey: string): Promise<string> {
+async function fetchTrendFromXai(apiKey: string, fromDate: string, toDate: string): Promise<string> {
   const response = await fetch("https://api.x.ai/v1/responses", {
     method: "POST",
     headers: {
@@ -37,7 +37,7 @@ async function fetchTrendFromXai(apiKey: string): Promise<string> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "grok-4-1",
+      model: "grok-4-1-fast",
       input: [
         {
           role: "user",
@@ -52,9 +52,8 @@ async function fetchTrendFromXai(apiKey: string): Promise<string> {
       tools: [
         {
           type: "x_search",
-          options: {
-            sources: ["x"],
-          },
+          from_date: fromDate,
+          to_date: toDate,
         },
       ],
       tool_choice: "auto",
@@ -136,10 +135,10 @@ export default {
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
     ctx.waitUntil(
       (async () => {
-        const now = new Date();
+        const now = new Date(event.scheduledTime);
         const date = getJstDateString(now);
         const slot = getSlotFromJstHour(now);
-        const rawResponse = await fetchTrendFromXai(env.XAI_API_KEY);
+        const rawResponse = await fetchTrendFromXai(env.XAI_API_KEY, date, date);
         await upsertTrendEntry(env.D1_DB, date, slot, rawResponse);
       })(),
     );

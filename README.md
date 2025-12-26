@@ -133,7 +133,7 @@ ORDER BY slot ASC;
 
 **必須パラメータ（本プロジェクト想定）**
 
-- `model`: 例 `grok-4-1`
+- `model`: 例 `grok-4-1-fast`
 - `input`: メッセージ配列（`role`, `content` を含む）
 - `tools`: `[{ "type": "x_search", "options": { "sources": ["x"] } }]`
 - `tool_choice`: `auto`（Search Tools を自動使用）
@@ -145,7 +145,7 @@ curl -X POST https://api.x.ai/v1/responses \
   -H "Authorization: Bearer $XAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "grok-4-1",
+    "model": "grok-4-1-fast",
     "input": [
       {
         "role": "user",
