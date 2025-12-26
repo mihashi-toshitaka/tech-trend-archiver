@@ -30,23 +30,31 @@ function getSlotFromJstHour(date: Date): 0 | 1 {
 }
 
 async function fetchTrendFromXai(apiKey: string): Promise<string> {
-  const response = await fetch("https://api.x.ai/v1/chat/completions", {
+  const response = await fetch("https://api.x.ai/v1/responses", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "grok-4-1-fast",
-      messages: [
+      model: "grok-4-1",
+      input: [
         {
           role: "user",
-          content: PROMPT,
+          content: [
+            {
+              type: "text",
+              text: PROMPT,
+            },
+          ],
         },
       ],
       tools: [
         {
           type: "x_search",
+          options: {
+            sources: ["x"],
+          },
         },
       ],
       tool_choice: "auto",
@@ -60,10 +68,21 @@ async function fetchTrendFromXai(apiKey: string): Promise<string> {
   }
 
   const payload = (await response.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
+    output_text?: string;
+    output?: Array<{
+      content?: Array<{
+        type?: string;
+        text?: string;
+      }>;
+    }>;
   };
 
-  const content = payload.choices?.[0]?.message?.content;
+  const content =
+    payload.output_text ??
+    payload.output
+      ?.flatMap((item) => item.content ?? [])
+      .find((item) => item.type === "output_text" || item.type === "text")
+      ?.text;
   if (!content) {
     throw new Error("xAI API response missing content");
   }
