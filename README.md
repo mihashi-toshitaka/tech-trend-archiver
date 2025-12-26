@@ -149,9 +149,7 @@ curl -X POST https://api.x.ai/v1/responses \
     "input": [
       {
         "role": "user",
-        "content": [
-          { "type": "text", "text": "ここ12時間のIT技術トレンドをまとめてください。" }
-        ]
+        "content": "ここ12時間のIT技術トレンドをまとめてください。"
       }
     ],
     "tools": [
