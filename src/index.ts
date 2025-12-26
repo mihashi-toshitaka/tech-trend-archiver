@@ -41,12 +41,7 @@ async function fetchTrendFromXai(apiKey: string, fromDate: string, toDate: strin
       input: [
         {
           role: "user",
-          content: [
-            {
-              type: "text",
-              text: PROMPT,
-            },
-          ],
+          content: PROMPT,
         },
       ],
       tools: [
