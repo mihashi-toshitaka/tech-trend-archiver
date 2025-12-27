@@ -50,6 +50,9 @@ async function fetchTrendFromXai(apiKey: string, fromDate: string, toDate: strin
           from_date: fromDate,
           to_date: toDate,
         },
+        {
+          type: "web_search",
+        },
       ],
       tool_choice: "auto",
       temperature: 0.2,
@@ -139,16 +142,17 @@ export default {
     ctx.waitUntil(
       (async () => {
         const now = new Date(event.scheduledTime);
-        const date = getJstDateString(now);
+        const toDate = getJstDateString(now);
+        const fromDate = getJstDateString(new Date(now.getTime() - 24 * 60 * 60 * 1000));
         const slot = getSlotFromJstHour(now);
-        const alreadyExists = await hasTrendEntry(env.D1_DB, date, slot);
+        const alreadyExists = await hasTrendEntry(env.D1_DB, toDate, slot);
         if (alreadyExists) {
-          console.log(`Skipping xAI fetch: entry already exists for date=${date} slot=${slot}.`);
+          console.log(`Skipping xAI fetch: entry already exists for date=${toDate} slot=${slot}.`);
           return;
         }
-        console.log(`Fetching xAI trends for date=${date} slot=${slot}.`);
-        const rawResponse = await fetchTrendFromXai(env.XAI_API_KEY, date, date);
-        await upsertTrendEntry(env.D1_DB, date, slot, rawResponse);
+        console.log(`Fetching xAI trends for date=${toDate} slot=${slot}.`);
+        const rawResponse = await fetchTrendFromXai(env.XAI_API_KEY, fromDate, toDate);
+        await upsertTrendEntry(env.D1_DB, toDate, slot, rawResponse);
       })(),
     );
   },
