@@ -39,7 +39,7 @@ async function fetchTrendFromXai(apiKey: string, fromDate: string, toDate: strin
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "grok-4-1-fast",
+      model: "grok-4.5",
       input: [
         {
           role: "user",
